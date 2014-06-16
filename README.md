@@ -17,7 +17,9 @@ It publishes a summary with selected classes and also publishes [linked data for
 ## How do I make this source work?
 At first, you need compiler tools, e.g. gcc and gnu make.
 Another prerequisite is the [libxml-2.0](http://xmlsoft.org/) developer tools.
-Finally, you need the rdf file containing the information used by the program available zipped on http://udcdata.info/udcsummary-skos.zip
+Finally, you need the rdf file containing the information used by the program available zipped on http://udcdata.info/udcsummary-skos.zip .
+The `Makefile` already downloads it as a convenience.
+
 Clone this repository, type `make` on your terminal and if everything is successful, the program shall be compiled and executed.
 
 ## How is this source licensed?
