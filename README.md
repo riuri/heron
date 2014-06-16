@@ -22,6 +22,14 @@ The `Makefile` already downloads it as a convenience.
 
 Clone this repository, type `make` on your terminal and if everything is successful, the program shall be compiled and executed.
 
+## What are the next steps planned?
+Some of my ideas are:
+- Translate the source to English and internationalize the program.
+- Interface with command-line arguments.
+- Better interaction with the user, with line history.
+- Interprete coordination specified by auxiliary signs.
+- Add Cutter-Sanborn three figure table.
+
 ## How is this source licensed?
 Since it is based on work from UDC Consortium, the license used here is under Creative Commons License Attribution-ShareAlike. The UDC Consortium made the rdf file. The program written by me reads and displays this rdf file and is licensed under the same license.
 
