@@ -152,7 +152,7 @@ void proc(xmlNodePtr n)
 int main()
 {
 	xmlDocPtr doc;
-	doc = xmlParseFile("../udcsummary-skos.rdf");
+	doc = xmlParseFile("udcsummary-skos.rdf");
 	assert(doc!=NULL);
 	raiz = xmlDocGetRootElement(doc);
 //	proc(raiz);
