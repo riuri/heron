@@ -149,13 +149,25 @@ void proc(xmlNodePtr n)
 	}
 }
 
-int main()
+int main(int argn, char*argv[])
 {
 	xmlDocPtr doc;
 	doc = xmlParseFile("udcsummary-skos.rdf");
 	assert(doc!=NULL);
 	raiz = xmlDocGetRootElement(doc);
-//	proc(raiz);
+	assert(raiz!=NULL);
+	if(argn>1) {
+		con res;
+		int i;
+		for(i=1; i<argn; i++) {
+			res = peganotacao(argv[i]);
+			if(res == NULL) printf("Não encontrei %s\n", argv[i]);
+			else liberacon(printacon(res));
+			putchar('\n');
+		}
+		xmlFreeDoc(doc);
+		return 0;
+	}
 	while(1) {
 		char entra[80];
 		con res;
