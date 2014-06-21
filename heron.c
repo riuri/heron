@@ -73,29 +73,29 @@ con getfromuri(char *uri)
 	}
 }
 
-void resumocon(con c)
+void shortcon(con c)
 {
 	assert(c!=NULL);
 	printf("\x1b[32m%s\x1b[0m %s\n", c->notation, c->caption);
 }
-void pairecursivo(con c)
+void recursiveparent(con c)
 {
 	con pai;
 	if(c->broaderuri==NULL) return;
 	pai = getfromuri(c->broaderuri);
 	if(pai==NULL) return;
-	pairecursivo(pai);
+	recursiveparent(pai);
 	printf("\x1b[1m");
-	resumocon(pai);
+	shortcon(pai);
 	freecon(pai);
 }
 #define campo(s,ca) if(c->ca) printf("\x1b[1m" s ":\x1b[0m \t%s\n", c->ca)
-con printacon(con c)
+con displaycon(con c)
 {
 	xmlNodePtr n;
 	con filho;
 	if(c==NULL) return;
-	pairecursivo(c);
+	recursiveparent(c);
 	printf("\x1b[1mNotação: \t\x1b[32m%s\x1b[0m\n\x1b[1mURI:\x1b[0m \t\t%s\n", c->notation, c->uri);
 	//campo("Broader",broaderuri);
 	if(c->caption) printf("\x1b[1mDescrição:\x1b[33m \t%s\x1b[0m\n", c->caption);
@@ -112,7 +112,7 @@ con printacon(con c)
 		if(filho->broaderuri!=NULL) {
 			if(0==strcmp(filho->broaderuri, c->uri)) {
 				printf("\x1b[1mVer também: \t");
-				resumocon(filho);
+				shortcon(filho);
 			}
 		}
 		freecon(filho);
@@ -121,7 +121,7 @@ con printacon(con c)
 }
 #undef campo
 
-con peganotacao(char* notation)
+con getfromnotation(char* notation)
 {
 	int count=0;
 	xmlNodePtr n = root;
@@ -136,6 +136,7 @@ con peganotacao(char* notation)
 	return NULL;
 }
 
+/* Basic procedure template
 void proc(xmlNodePtr n)
 {
 	int count=0;
@@ -144,10 +145,10 @@ void proc(xmlNodePtr n)
 	for(n = n->children; n!=NULL; n = n->next) {
 		if(!isconcept(n)) continue;
 		cc = xml2con(n);
-		if(count++ == 1240) printacon(cc);
+		if(count++ == 1240) displaycon(cc);
 		if(cc!=NULL) freecon(cc);
 	}
-}
+} */
 
 int main(int argn, char*argv[])
 {
@@ -160,9 +161,9 @@ int main(int argn, char*argv[])
 		con res;
 		int i;
 		for(i=1; i<argn; i++) {
-			res = peganotacao(argv[i]);
+			res = getfromnotation(argv[i]);
 			if(res == NULL) printf("Não encontrei %s\n", argv[i]);
-			else freecon(printacon(res));
+			else freecon(displaycon(res));
 			putchar('\n');
 		}
 		xmlFreeDoc(doc);
@@ -173,10 +174,10 @@ int main(int argn, char*argv[])
 		con res;
 		printf("\n> ");
 		if(scanf("%80s", entra)==EOF) break;
-		res = peganotacao(entra);
+		res = getfromnotation(entra);
 		if(res == NULL) printf("Não encontrei %s\n", entra);
 		else {
-			freecon(printacon(res));
+			freecon(displaycon(res));
 		}
 	}
 	printf("Tchau\n");
