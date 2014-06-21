@@ -7,7 +7,7 @@
 #define isnode(x, s) (0==xmlStrcmp((x)->name, (xmlChar*)(s)))
 #define isconcept(x) (0==xmlStrcmp((x)->name, (xmlChar*)"Concept"))
 
-xmlNodePtr raiz;
+xmlNodePtr root;
 
 typedef struct concept{
 	char* notation;
@@ -23,7 +23,7 @@ typedef struct concept{
 	//xmlNodePtr *related;
 } *con;
 
-void pegalang(char** dest, xmlNodePtr n)
+void checklang(char** dest, xmlNodePtr n)
 {
 	xmlChar *lang;
 	lang = xmlGetProp(n, "lang");
@@ -43,33 +43,33 @@ con xml2con(xmlNodePtr n)
 		if(isnode(n, "broader")) ret->broaderuri = (char*)xmlGetProp(n, "resource");
 		if(n->children == NULL) continue;
 		if(isnode(n, "notation")) ret->notation = (char*)n->children->content;
-		else if(isnode(n, "prefLabel")) pegalang(&(ret->caption), n);
-		else if(isnode(n, "includingNote")) pegalang(&(ret->including), n);
-		else if(isnode(n, "scopeNote")) pegalang(&(ret->scope), n);
-		else if(isnode(n, "applicationNote")) pegalang(&(ret->application), n);
-		else if(isnode(n, "example")) pegalang(&(ret->example), n);
+		else if(isnode(n, "prefLabel")) checklang(&(ret->caption), n);
+		else if(isnode(n, "includingNote")) checklang(&(ret->including), n);
+		else if(isnode(n, "scopeNote")) checklang(&(ret->scope), n);
+		else if(isnode(n, "applicationNote")) checklang(&(ret->application), n);
+		else if(isnode(n, "example")) checklang(&(ret->example), n);
 		//else if(isnode(n, "related")) ret->relateduri = (char*)n->children->content;
 	}
 	return ret;
 }
 
-void liberacon(con c)
+void freecon(con c)
 {
 	if(c == NULL) return;
 	xmlFree(c->broaderuri);
 	free((void*)c);
 }
 
-con pegauri(char *uri)
+con getfromuri(char *uri)
 {
 	int count=0;
-	xmlNodePtr n = raiz;
+	xmlNodePtr n = root;
 	con cc;
 	for(n = n->children; n!=NULL; n = n->next) {
 		if(!isconcept(n)) continue;
 		cc = xml2con(n);
 		if(0==strcmp(uri, cc->uri)) return cc;
-		if(cc!=NULL) liberacon(cc);
+		if(cc!=NULL) freecon(cc);
 	}
 }
 
@@ -82,12 +82,12 @@ void pairecursivo(con c)
 {
 	con pai;
 	if(c->broaderuri==NULL) return;
-	pai = pegauri(c->broaderuri);
+	pai = getfromuri(c->broaderuri);
 	if(pai==NULL) return;
 	pairecursivo(pai);
 	printf("\x1b[1m");
 	resumocon(pai);
-	liberacon(pai);
+	freecon(pai);
 }
 #define campo(s,ca) if(c->ca) printf("\x1b[1m" s ":\x1b[0m \t%s\n", c->ca)
 con printacon(con c)
@@ -104,7 +104,7 @@ con printacon(con c)
 	campo("Escopo", scope);
 	campo("Exemplo", example);
 	//campo("Veja também", relateduri);
-	n = raiz;
+	n = root;
 	for(n = n->children; n!=NULL; n = n->next) {
 		if(!isconcept(n)) continue;
 		filho = xml2con(n);
@@ -115,7 +115,7 @@ con printacon(con c)
 				resumocon(filho);
 			}
 		}
-		liberacon(filho);
+		freecon(filho);
 	}
 	return c;
 }
@@ -124,14 +124,14 @@ con printacon(con c)
 con peganotacao(char* notation)
 {
 	int count=0;
-	xmlNodePtr n = raiz;
+	xmlNodePtr n = root;
 	con cc;
 	assert(n!=NULL);
 	for(n = n->children; n!=NULL; n = n->next) {
 		if(!isconcept(n)) continue;
 		cc = xml2con(n);
 		if(0==strcmp(notation, cc->notation)) return cc;
-		if(cc!=NULL) liberacon(cc);
+		if(cc!=NULL) freecon(cc);
 	}
 	return NULL;
 }
@@ -145,7 +145,7 @@ void proc(xmlNodePtr n)
 		if(!isconcept(n)) continue;
 		cc = xml2con(n);
 		if(count++ == 1240) printacon(cc);
-		if(cc!=NULL) liberacon(cc);
+		if(cc!=NULL) freecon(cc);
 	}
 }
 
@@ -154,15 +154,15 @@ int main(int argn, char*argv[])
 	xmlDocPtr doc;
 	doc = xmlParseFile("udcsummary-skos.rdf");
 	assert(doc!=NULL);
-	raiz = xmlDocGetRootElement(doc);
-	assert(raiz!=NULL);
+	root = xmlDocGetRootElement(doc);
+	assert(root!=NULL);
 	if(argn>1) {
 		con res;
 		int i;
 		for(i=1; i<argn; i++) {
 			res = peganotacao(argv[i]);
 			if(res == NULL) printf("Não encontrei %s\n", argv[i]);
-			else liberacon(printacon(res));
+			else freecon(printacon(res));
 			putchar('\n');
 		}
 		xmlFreeDoc(doc);
@@ -176,7 +176,7 @@ int main(int argn, char*argv[])
 		res = peganotacao(entra);
 		if(res == NULL) printf("Não encontrei %s\n", entra);
 		else {
-			liberacon(printacon(res));
+			freecon(printacon(res));
 		}
 	}
 	printf("Tchau\n");
