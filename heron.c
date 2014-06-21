@@ -80,46 +80,46 @@ void shortcon(con c)
 }
 void recursiveparent(con c)
 {
-	con pai;
+	con parent;
 	if(c->broaderuri==NULL) return;
-	pai = getfromuri(c->broaderuri);
-	if(pai==NULL) return;
-	recursiveparent(pai);
+	parent = getfromuri(c->broaderuri);
+	if(parent==NULL) return;
+	recursiveparent(parent);
 	printf("\x1b[1m");
-	shortcon(pai);
-	freecon(pai);
+	shortcon(parent);
+	freecon(parent);
 }
-#define campo(s,ca) if(c->ca) printf("\x1b[1m" s ":\x1b[0m \t%s\n", c->ca)
+#define field(s,ca) if(c->ca) printf("\x1b[1m" s ":\x1b[0m \t%s\n", c->ca)
 con displaycon(con c)
 {
 	xmlNodePtr n;
-	con filho;
+	con child;
 	if(c==NULL) return;
 	recursiveparent(c);
 	printf("\x1b[1mNotação: \t\x1b[32m%s\x1b[0m\n\x1b[1mURI:\x1b[0m \t\t%s\n", c->notation, c->uri);
-	//campo("Broader",broaderuri);
+	//field("Broader",broaderuri);
 	if(c->caption) printf("\x1b[1mDescrição:\x1b[33m \t%s\x1b[0m\n", c->caption);
-	campo("Incluindo", including);
-	campo("Aplicação", application);
-	campo("Escopo", scope);
-	campo("Exemplo", example);
-	//campo("Veja também", relateduri);
+	field("Incluindo", including);
+	field("Aplicação", application);
+	field("Escopo", scope);
+	field("Exemplo", example);
+	//field("Veja também", relateduri);
 	n = root;
 	for(n = n->children; n!=NULL; n = n->next) {
 		if(!isconcept(n)) continue;
-		filho = xml2con(n);
-		if(filho == NULL) continue;
-		if(filho->broaderuri!=NULL) {
-			if(0==strcmp(filho->broaderuri, c->uri)) {
+		child = xml2con(n);
+		if(child == NULL) continue;
+		if(child->broaderuri!=NULL) {
+			if(0==strcmp(child->broaderuri, c->uri)) {
 				printf("\x1b[1mVer também: \t");
-				shortcon(filho);
+				shortcon(child);
 			}
 		}
-		freecon(filho);
+		freecon(child);
 	}
 	return c;
 }
-#undef campo
+#undef field
 
 con getfromnotation(char* notation)
 {
