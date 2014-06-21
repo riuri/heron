@@ -4,12 +4,12 @@
 #include <assert.h>
 #include <string.h>
 
-#define eno(x, s) (0==xmlStrcmp((x)->name, (xmlChar*)(s)))
-#define econceito(x) (0==xmlStrcmp((x)->name, (xmlChar*)"Concept"))
+#define isnode(x, s) (0==xmlStrcmp((x)->name, (xmlChar*)(s)))
+#define isconcept(x) (0==xmlStrcmp((x)->name, (xmlChar*)"Concept"))
 
 xmlNodePtr raiz;
 
-typedef struct conceito{
+typedef struct concept{
 	char* notation;
 	char* uri;
 	char* broaderuri;
@@ -35,20 +35,20 @@ void pegalang(char** dest, xmlNodePtr n)
 con xml2con(xmlNodePtr n)
 {
 	con ret;
-	if(!econceito(n)) return NULL;
-	ret = malloc(sizeof(struct conceito));
-	memset((void*)ret, 0, sizeof(struct conceito));
+	if(!isconcept(n)) return NULL;
+	ret = malloc(sizeof(struct concept));
+	memset((void*)ret, 0, sizeof(struct concept));
 	ret->uri = (char*) xmlGetProp(n, "about");
 	for(n = n->children; n !=NULL; n = n->next) {
-		if(eno(n, "broader")) ret->broaderuri = (char*)xmlGetProp(n, "resource");
+		if(isnode(n, "broader")) ret->broaderuri = (char*)xmlGetProp(n, "resource");
 		if(n->children == NULL) continue;
-		if(eno(n, "notation")) ret->notation = (char*)n->children->content;
-		else if(eno(n, "prefLabel")) pegalang(&(ret->caption), n);
-		else if(eno(n, "includingNote")) pegalang(&(ret->including), n);
-		else if(eno(n, "scopeNote")) pegalang(&(ret->scope), n);
-		else if(eno(n, "applicationNote")) pegalang(&(ret->application), n);
-		else if(eno(n, "example")) pegalang(&(ret->example), n);
-		//else if(eno(n, "related")) ret->relateduri = (char*)n->children->content;
+		if(isnode(n, "notation")) ret->notation = (char*)n->children->content;
+		else if(isnode(n, "prefLabel")) pegalang(&(ret->caption), n);
+		else if(isnode(n, "includingNote")) pegalang(&(ret->including), n);
+		else if(isnode(n, "scopeNote")) pegalang(&(ret->scope), n);
+		else if(isnode(n, "applicationNote")) pegalang(&(ret->application), n);
+		else if(isnode(n, "example")) pegalang(&(ret->example), n);
+		//else if(isnode(n, "related")) ret->relateduri = (char*)n->children->content;
 	}
 	return ret;
 }
@@ -66,7 +66,7 @@ con pegauri(char *uri)
 	xmlNodePtr n = raiz;
 	con cc;
 	for(n = n->children; n!=NULL; n = n->next) {
-		if(!econceito(n)) continue;
+		if(!isconcept(n)) continue;
 		cc = xml2con(n);
 		if(0==strcmp(uri, cc->uri)) return cc;
 		if(cc!=NULL) liberacon(cc);
@@ -106,7 +106,7 @@ con printacon(con c)
 	//campo("Veja também", relateduri);
 	n = raiz;
 	for(n = n->children; n!=NULL; n = n->next) {
-		if(!econceito(n)) continue;
+		if(!isconcept(n)) continue;
 		filho = xml2con(n);
 		if(filho == NULL) continue;
 		if(filho->broaderuri!=NULL) {
@@ -128,7 +128,7 @@ con peganotacao(char* notation)
 	con cc;
 	assert(n!=NULL);
 	for(n = n->children; n!=NULL; n = n->next) {
-		if(!econceito(n)) continue;
+		if(!isconcept(n)) continue;
 		cc = xml2con(n);
 		if(0==strcmp(notation, cc->notation)) return cc;
 		if(cc!=NULL) liberacon(cc);
@@ -142,7 +142,7 @@ void proc(xmlNodePtr n)
 	con cc;
 	assert(n!=NULL);
 	for(n = n->children; n!=NULL; n = n->next) {
-		if(!econceito(n)) continue;
+		if(!isconcept(n)) continue;
 		cc = xml2con(n);
 		if(count++ == 1240) printacon(cc);
 		if(cc!=NULL) liberacon(cc);
