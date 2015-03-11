@@ -1,3 +1,4 @@
 heron
+*.o
 udcsummary-skos.rdf
 udcsummary-skos.zip
