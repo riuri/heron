@@ -12,6 +12,12 @@ udcsummary-skos.rdf: udcsummary-skos.zip
 	unzip udcsummary-skos.zip
 	touch udcsummary-skos.rdf
 
+messages.pot: heron.c
+	xgettext -j -k_ --package-name=Heron --package-version=1.0 -o messages.pot heron.c
+
+%.mo: %.po
+	msgfmt $< -o $@
+
 heron:
 
 .PHONY: teste

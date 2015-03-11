@@ -1,4 +1,5 @@
 heron
 *.o
+*.gmo
 udcsummary-skos.rdf
 udcsummary-skos.zip

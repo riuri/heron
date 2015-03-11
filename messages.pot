@@ -1,0 +1,62 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Heron 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-03-11 14:27-0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: heron.c:110
+msgid "Notation"
+msgstr ""
+
+#: heron.c:110
+msgid "URI"
+msgstr ""
+
+#: heron.c:112
+msgid "Description"
+msgstr ""
+
+#: heron.c:113
+msgid "Including"
+msgstr ""
+
+#: heron.c:114
+msgid "Application"
+msgstr ""
+
+#: heron.c:115
+msgid "Scope"
+msgstr ""
+
+#: heron.c:116
+msgid "Example"
+msgstr ""
+
+#: heron.c:125
+msgid "See also"
+msgstr ""
+
+#: heron.c:179 heron.c:196
+#, c-format
+msgid "Not found %s\n"
+msgstr ""
+
+#: heron.c:203
+#, c-format
+msgid ""
+"\n"
+"Bye\n"
+msgstr ""

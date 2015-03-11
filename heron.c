@@ -5,9 +5,12 @@
 #include <string.h>
 #include <readline/readline.h>
 #include <readline/history.h>
+#include <libintl.h>
+#include <locale.h>
 
 #define isnode(x, s) (0==xmlStrcmp((x)->name, (xmlChar*)(s)))
 #define isconcept(x) (0==xmlStrcmp((x)->name, (xmlChar*)"Concept"))
+#define _(str) gettext(str)
 
 xmlNodePtr root;
 
@@ -97,20 +100,20 @@ void recursiveparent(con c)
 	shortcon(parent);
 	freecon(parent);
 }
-#define field(s,ca) if(c->ca) printf("\x1b[1m" s ":\x1b[0m \t%s\n", c->ca)
+#define field(s,ca) if(c->ca) printf("\x1b[1m%s:\x1b[0m \t%s\n", s, c->ca)
 con displaycon(con c)
 {
 	xmlNodePtr n;
 	con child;
 	if(c==NULL) return;
 	recursiveparent(c);
-	printf("\x1b[1mNotação: \t\x1b[32m%s\x1b[0m\n\x1b[1mURI:\x1b[0m \t\t%s\n", c->notation, c->uri);
+	printf("\x1b[1m%s: \t\x1b[32m%s\x1b[0m\n\x1b[1m%s:\x1b[0m \t\t%s\n", _("Notation"), c->notation, _("URI"), c->uri);
 	//field("Broader",broaderuri);
-	if(c->caption) printf("\x1b[1mDescrição:\x1b[33m \t%s\x1b[0m\n", c->caption);
-	field("Incluindo", including);
-	field("Aplicação", application);
-	field("Escopo", scope);
-	field("Exemplo", example);
+	if(c->caption) printf("\x1b[1m%s:\x1b[33m \t%s\x1b[0m\n", _("Description"), c->caption);
+	field(_("Including"), including);
+	field(_("Application"), application);
+	field(_("Scope"), scope);
+	field(_("Example"), example);
 	//field("Veja também", relateduri);
 	n = root;
 	for(n = n->children; n!=NULL; n = n->next) {
@@ -119,7 +122,7 @@ con displaycon(con c)
 		if(child == NULL) continue;
 		if(child->broaderuri!=NULL) {
 			if(0==strcmp(child->broaderuri, c->uri)) {
-				printf("\x1b[1mVer também: \t");
+				printf("\x1b[1m%s: \t", _("See also"));
 				shortcon(child);
 			}
 		}
@@ -161,6 +164,9 @@ void proc(xmlNodePtr n)
 int main(int argn, char*argv[])
 {
 	xmlDocPtr doc;
+	setlocale(LC_ALL, "");
+	bindtextdomain("Heron", ".");
+	textdomain("Heron");
 	doc = xmlParseFile("udcsummary-skos.rdf");
 	assert(doc!=NULL);
 	root = xmlDocGetRootElement(doc);
@@ -170,7 +176,7 @@ int main(int argn, char*argv[])
 		int i;
 		for(i=1; i<argn; i++) {
 			res = getfromnotation(argv[i]);
-			if(res == NULL) printf("Não encontrei %s\n", argv[i]);
+			if(res == NULL) printf(_("Not found %s\n"), argv[i]);
 			else freecon(displaycon(res));
 			putchar('\n');
 		}
@@ -187,14 +193,14 @@ int main(int argn, char*argv[])
 			free(entra);
 			continue;
 		}
-		if(res == NULL) printf("Não encontrei %s\n", entra);
+		if(res == NULL) printf(_("Not found %s\n"), entra);
 		else {
 			freecon(displaycon(res));
 			add_history(entra);
 		}
 		free(entra);
 	}
-	printf("\nTchau\n");
+	printf(_("\nBye\n"));
 	xmlFreeDoc(doc);
 	return 0;
 }
