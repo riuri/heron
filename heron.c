@@ -3,6 +3,8 @@
 #include <stdio.h>
 #include <assert.h>
 #include <string.h>
+#include <readline/readline.h>
+#include <readline/history.h>
 
 #define isnode(x, s) (0==xmlStrcmp((x)->name, (xmlChar*)(s)))
 #define isconcept(x) (0==xmlStrcmp((x)->name, (xmlChar*)"Concept"))
@@ -170,17 +172,23 @@ int main(int argn, char*argv[])
 		return 0;
 	}
 	while(1) {
-		char entra[80];
+		char *entra;
 		con res;
-		printf("\n> ");
-		if(scanf("%80s", entra)==EOF) break;
+		entra = readline("> ");
+		if(entra==NULL) break;
 		res = getfromnotation(entra);
+		if(entra[0] == '\0') {
+			free(entra);
+			continue;
+		}
 		if(res == NULL) printf("Não encontrei %s\n", entra);
 		else {
 			freecon(displaycon(res));
+			add_history(entra);
 		}
+		free(entra);
 	}
-	printf("Tchau\n");
+	printf("\nTchau\n");
 	xmlFreeDoc(doc);
 	return 0;
 }
