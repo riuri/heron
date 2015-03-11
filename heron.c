@@ -28,8 +28,14 @@ typedef struct concept{
 void checklang(char** dest, xmlNodePtr n)
 {
 	xmlChar *lang;
+	char env_lang[3], *env;
+	int i;
+	env = getenv("LANG");
+	env_lang[0] = env[0];
+	env_lang[1] = env[1];
+	env_lang[2] = '\0';
 	lang = xmlGetProp(n, "lang");
-	if(xmlStrcmp(lang, (xmlChar*)"pt")==0) *dest = n->children->content;
+	if(xmlStrcmp(lang, (xmlChar*)env_lang)==0) *dest = n->children->content;
 	else if(xmlStrcmp(lang, (xmlChar*)"en")==0 && *dest==NULL) *dest = n->children->content;
 	xmlFree(lang);
 }
