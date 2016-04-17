@@ -96,7 +96,7 @@ con displaycon(con c)
 {
 	xmlNodePtr n;
 	con child;
-	if(c==NULL) return;
+	if(c==NULL) return c;
 	recursiveparent(c);
 	printf("\x1b[1mNotação: \t\x1b[32m%s\x1b[0m\n\x1b[1mURI:\x1b[0m \t\t%s\n", c->notation, c->uri);
 	//field("Broader",broaderuri);
